@@ -1,13 +1,19 @@
+//==========================================================
+// set resolution of your projector image/second monitor
+// and name of your calibration file-to-be
+int pWidth = 1024;
+int pHeight = 768; 
+String calibFilename = "calibration.txt";
+
+
+//==========================================================
+//==========================================================
+
 import javax.swing.JFrame;
 import SimpleOpenNI.*;
 import gab.opencv.*;
 import controlP5.*;
-
-// set resolution of your projector image/second monitor
-// and name of your calibration file-to-be
-int pWidth = 1024;
-int pHeight = 768;
-String calibFilename = "calib1.txt";
+import Jama.*;
 
 SimpleOpenNI kinect;
 OpenCV opencv;
@@ -21,12 +27,11 @@ PVector testPoint, testPointP;
 boolean isSearchingBoard = false;
 boolean calibrated = false;
 boolean testingMode = false;
-boolean viewRgb = true;
 int cx, cy, cwidth;
 
 void setup() 
 {
-  size(1150, 620);
+  size(1200, 768);
   textFont(createFont("Courier", 24));
   frameBoard = new ChessboardFrame();
 
@@ -34,6 +39,7 @@ void setup()
   kinect = new SimpleOpenNI(this);
   kinect.setMirror(false);
   kinect.enableDepth();
+  //kinect.kinect.enableIR();
   kinect.enableRGB();
   kinect.alternativeViewPointDepthToImage();
   opencv = new OpenCV(this, kinect.depthWidth(), kinect.depthHeight());
@@ -43,22 +49,19 @@ void setup()
   ptsP = new ArrayList<PVector>();
   testPoint = new PVector();
   testPointP = new PVector();
-
-  cx = 20;
-  cy = 20;
-  cwidth = 200;
   setupGui();
 }
 
 void draw() 
 {
-  // draw Chessboard onto scene
+  // draw chessboard onto scene
   projPoints = drawChessboard(cx, cy, cwidth);
 
   // update kinect and look for chessboard
   kinect.update();
   depthMap = kinect.depthMapRealWorld();
   opencv.loadImage(kinect.rgbImage());
+  //opencv.loadImage(kinect.irImage());
   opencv.gray();
 
   if (isSearchingBoard)
@@ -73,22 +76,27 @@ void drawGui()
 
   // draw the RGB image
   pushMatrix();
-  translate(10, 40);
+  translate(30, 120);
   textSize(22);
   fill(255);
-  text("Kinect Image", 5, -5);
-  if (viewRgb)  image(kinect.rgbImage(),   0, 0);
-  else          image(kinect.depthImage(), 0, 0);
-
+  //image(kinect.irImage(), 0, 0);
+  image(kinect.rgbImage(), 0, 0);
+  
   // draw chessboard corners, if found
   if (isSearchingBoard) {
+    int numFoundPoints = 0;
     for (PVector p : foundPoints) {
-      if (getDepthMapAt((int)p.x, (int)p.y).z > 0)
+      if (getDepthMapAt((int)p.x, (int)p.y).z > 0) {
         fill(0, 255, 0);
+        numFoundPoints += 1;
+      }
       else  fill(255, 0, 0);
-      ellipse(p.x, p.y, 4, 4);
+      ellipse(p.x, p.y, 5, 5);
     }
+    if (numFoundPoints == 12)  guiAdd.show();
+    else                       guiAdd.hide();
   }
+  else  guiAdd.hide();
   if (calibrated && testingMode) {
     fill(255, 0, 0);
     ellipse(testPoint.x, testPoint.y, 10, 10);
@@ -98,11 +106,11 @@ void drawGui()
   // draw GUI
   pushMatrix();
   pushStyle();
-  translate(kinect.depthWidth()+40, 40);
+  translate(kinect.depthWidth()+70, 40);
   fill(0);
-  rect(0, 0, 420, 560);
+  rect(0, 0, 450, 680);
   fill(255);
-  text("number of point pairs: " + ptsP.size(), 12, 24);
+  text(ptsP.size()+" pairs", 26, guiPos.y+525);
   popStyle();
   popMatrix();
 }
@@ -135,6 +143,8 @@ void addPointPair() {
       ptsK.add( getDepthMapAt((int) foundPoints.get(i).x, (int) foundPoints.get(i).y) );
     }
   }
+  guiCalibrate.show();
+  guiClear.show();
 }
 
 PVector getDepthMapAt(int x, int y) {
@@ -145,6 +155,7 @@ PVector getDepthMapAt(int x, int y) {
 void clearPoints() {
   ptsP.clear();
   ptsK.clear();
+  guiSave.hide();
 }
 
 void saveC() {
@@ -152,17 +163,16 @@ void saveC() {
 }
 
 void loadC() {
+  println("load");
   loadCalibration(calibFilename);
+  guiTesting.addItem("Testing Mode", 1);
 }
 
 void mousePressed() {
   if (calibrated && testingMode) {
-    testPoint = new PVector(constrain(mouseX-10, 0, kinect.depthWidth()-1), 
-                            constrain(mouseY-40, 0, kinect.depthHeight()-1));
-    //println("=====0======");
-    //println(testPoint);
+    testPoint = new PVector(constrain(mouseX-30, 0, kinect.depthWidth()-1), 
+                            constrain(mouseY-120, 0, kinect.depthHeight()-1));
     int idx = kinect.depthWidth() * (int) testPoint.y + (int) testPoint.x;
     testPointP = convertKinectToProjector(depthMap[idx]);
   }
 }
-

@@ -32,4 +32,5 @@ void loadCalibration(String filename) {
   for (int i=0; i<s.length; i++)
     x.set(i, 0, Float.parseFloat(s[i]));
   calibrated = true;
+  println("done loading");
 }

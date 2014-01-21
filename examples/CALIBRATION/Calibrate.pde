@@ -36,7 +36,11 @@ void calibrate() {
   }
   QRDecomposition problem = new QRDecomposition(A);
   x = problem.solve(y);
-  calibrated = true;
+  if (!calibrated) {
+    calibrated = true;
+    guiSave.show();
+    guiTesting.addItem("Testing Mode", 1);
+  }
 }
  
 PVector convertKinectToProjector(PVector kp) {
@@ -44,12 +48,6 @@ PVector convertKinectToProjector(PVector kp) {
   float denom = (float)x.get(8,0)*kp.x + (float)x.get(9,0)*kp.y + (float)x.get(10,0)*kp.z + 1;
   out.x = pWidth * ((float)x.get(0,0)*kp.x + (float)x.get(1,0)*kp.y + (float)x.get(2,0)*kp.z + (float)x.get(3,0)) / denom;
   out.y = pHeight * ((float)x.get(4,0)*kp.x + (float)x.get(5,0)*kp.y + (float)x.get(6,0)*kp.z + (float)x.get(7,0)) / denom;
-  //println("===1====");
-  //println(kp);
-  //println("===2====");
-  //println(new PVector(out.x/pWidth, out.y/pHeight));
-  //println("===3====");
-  
   return out;
 }
 
@@ -68,4 +66,3 @@ void printMatrix(Jama.Matrix M) {
     }
   }
 }
-
