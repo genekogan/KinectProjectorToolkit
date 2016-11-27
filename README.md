@@ -6,6 +6,9 @@ To see some applications of the software, see this [highlight video](http://vime
 
 The calibration methodology comes from this writeup by [Jan Hrdlička at 3dsense blog](http://blog.3dsense.org/programming/kinect-projector-calibration-human-mapping-2/). For other work on Projector/Kinect calibration, see works and code by [Elliot Woods, Kyle McDonald](https://github.com/elliotwoods/artandcode.Camera-and-projector-calibration), and [Daito Manabe](http://thecreatorsproject.vice.com/blog/projection-mapped-dance-performance-daito-manabe), as well as the OpenFrameworks addon [ofxCamaraLucida](http://chparsons.com.ar/#camara_lucida).
 
+##V2 version
+
+A very nice-looking fork of this for Kinect V2 is available [here](https://github.com/bradenneufeld/K2P3Toolkit).
 
 ##Installation
 
