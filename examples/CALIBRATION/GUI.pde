@@ -72,8 +72,8 @@ void setupGui() {
 void controlEvent(ControlEvent theControlEvent) {
   try {
     if (theControlEvent.isFrom("chessPosition")) {
-      cx = (int) map(guiCpos.arrayValue()[0], 0, 100, 0, pWidth);
-      cy = (int) map(guiCpos.arrayValue()[1], 0, 100, 0, pHeight);
+      cx = (int) map(guiCpos.getArrayValue()[0], 0, 100, 0, pWidth);
+      cy = (int) map(guiCpos.getArrayValue()[1], 0, 100, 0, pHeight);
     }  
   } catch(Exception e) {
     println(e);
